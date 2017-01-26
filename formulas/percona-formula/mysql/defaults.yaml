@@ -1,0 +1,97 @@
+# -*- coding: utf-8 -*-
+# vim: ft=yaml
+# SET ALL PARAMS IN CONFIG SECTION USING UNDERSCORE, NOT HYPHEN
+# so that it works correctly
+{% set version = salt['pillar.get']('percona.version', '5.6') %}
+{% set max_memory = salt['grains.get']('mem_total', 100 * 1024) %}
+{% load_yaml as rawmap %}
+
+Ubuntu:
+  client: percona-server-client-{{ version }}
+  server: percona-server-server-{{ version }}
+  server_short: percona-server-server
+  service: mysql
+  python: python-mysqldb
+  debconf_utils: debconf-utils
+  dev: libmysqlclient-dev
+  config:
+    file: /etc/mysql/conf.d/percona.cnf
+    sections:
+      client:
+        default_character_set: utf8
+        port: 3306
+        socket: /var/run/mysqld/mysqld.sock
+      mysqld_safe:
+        socket: /var/run/mysqld/mysqld.sock
+        nice: 0
+      mysqld:
+        bind_address: 0.0.0.0
+        character_set_server: utf8
+        default_storage_engine: InnoDB
+        pid_file: /var/run/mysqld/mysqld.pid
+        socket: /var/run/mysqld/mysqld.sock
+        ssl_ca: /etc/mysql/cacert.pem
+        ssl_cert: /etc/mysql/server.pem
+        ssl_key: /etc/mysql/server.key
+        user: mysql
+        skip_name_resolve: noarg_present
+        key_buffer_size: 32M
+        myisam_recover: FORCE,BACKUP
+        innodb: FORCE
+        innodb_strict_mode: 1
+        max_allowed_packet: 16M
+        max_connect_errors: 1000000
+        sql_mode: STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE
+        sysdate_is_now: 1
+        datadir: /var/lib/mysql/
+        expire_logs_days: 90
+        log_bin: /var/lib/mysql/mysql_bin
+        log_bin_index: /var/lib/mysql/mysql-bin.index
+        sync_binlog: 0
+        binlog_format: ROW
+        log_slave_updates: 1
+        relay_log: /var/lib/mysql/relay_bin
+        relay_log_index: /var/lib/mysql/relay-bin.index
+        server_id: 25
+        skip_slave_start: 0
+        slave_net_timeout: 60
+        sync_master_info: 100
+        sync_relay_log: 100
+        sync_relay_log_info: 100
+        master_info_repository: TABLE
+        relay_log_info_repository: TABLE
+        max_connections: 300
+        max_heap_table_size: 32M
+        open_files_limit: 800000
+        query_cache_size: 0
+        query_cache_type: 0
+        table_definition_cache: 4096
+        table_open_cache: 10240
+        thread_cache_size: 100
+        tmp_table_size: 32M
+        innodb_data_file_path: ibdata1:10M:autoextend
+        innodb_file_format: Barracuda
+        innodb_buffer_pool_size: {{ max_memory * 0.6|int }}K
+        innodb_buffer_pool_instances: 64
+        innodb_file_per_table: 1
+        innodb_flush_log_at_trx_commit: 1
+        innodb_flush_method: ALL_O_DIRECT
+        innodb_log_file_size: 4G
+        innodb_log_files_in_group: 2
+        innodb_io_capacity: 3000
+        innodb_io_capacity_max: 4000
+        innodb_thread_concurrency: 0
+        innodb_stats_on_metadata: 0
+        log_error: /var/log/mysql/mysql-error.log
+        log_queries_not_using_indexes: 0
+        slow_query_log: 1
+        slow_query_log_file: /var/log/mysql/mysql-slow.log
+        default_time_zone: 'US/Pacific'
+        plugin_load: audit_log.so
+        audit_log_policy: 'LOGINS'
+      mysqldump:
+        quick: noarg_present
+        quote_names: noarg_present
+        max_allowed_packet: 16M
+      isamchk:
+        key_buffer_size: 16M
