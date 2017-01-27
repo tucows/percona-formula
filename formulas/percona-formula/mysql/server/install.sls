@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # vim: ft=sls
 include:
-  - .repo
-  - .python
+  - mysql.repo
+  - mysql.python
 
 {% from "mysql/defaults.yaml" import rawmap with context %}
 
