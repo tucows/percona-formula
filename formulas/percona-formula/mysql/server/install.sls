@@ -37,15 +37,16 @@ percona-server-pkg:
 mysql_root_password:
   mysql_user:
     - present
-    - name: {{ mysql_root_user }}
-    - host: localhost
-    - password: {{ mysql_root_password|replace("'", "'\"'\"'") }}
+    - name: '{{ mysql_root_user }}'
+    - password: '{{ mysql_root_password }}'
+    - connection_host: '{{ mysql_host }}'
     - connection_default_file: {{ defaults_extra_file }}
     - connection_charset: utf8
     - saltenv:
       - LC_ALL: "en_US.utf8"
     - require:
       - service: mysqld
+      - pkg: mysql_python
 
 root_my_cnf:
   file.managed:
@@ -55,13 +56,11 @@ root_my_cnf:
     - user: root
     - group: root
     - mode: 600
-    {%- if mysql_root_user and mysql_root_password %}
     - context:
-       mysql_root_user: {{ mysql_root_user }}
-       mysql_root_password: {{ mysql_root_password|replace("'", "'\"'\"'") }}
+       mysql_root_user: '{{ mysql_root_user }}'
+       mysql_root_password: '{{ mysql_root_password }}'
     - require:
       - mysql_user: mysql_root_password
-    {%- endif %}
 
 {% for host in ['localhost', 'localhost.localdomain', salt['grains.get']('fqdn')] %}
 mysql_delete_anonymous_user_{{ host }}:
