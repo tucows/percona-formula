@@ -24,11 +24,3 @@
 - server
 - xtrabackup
 {% endload %}
-
-{% load_yaml as client_supported_sections %}
-- client
-- client-mariadb
-- mysql
-- mysqldump
-- mysqladmin
-{% endload %}
