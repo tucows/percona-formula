@@ -78,9 +78,11 @@ mysql_delete_anonymous_user_{{ host }}:
 
 mysql_tzinfo_to_sql:
   cmd.run:
-    - name: mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql mysql
+    - name: mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql --defaults-extra-file=/root/.my.cnf mysql
+    - unless: mysql --defaults-extra-file=/root/.my.cnf mysql --execute="SHOW TABLES;" | grep -q 'time_zone'
     - require:
       - service: mysqld
+      - file: root_my_cnf
 
 mysqld:
   service.running:
