@@ -95,3 +95,5 @@ Ubuntu:
         max_allowed_packet: 16M
       isamchk:
         key_buffer_size: 16M
+{% endload %}
+
