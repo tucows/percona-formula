@@ -4,21 +4,21 @@
 
 [client]
 user = {{ mysql_root_user }}
-password = {{ mysql_root_password|replace("'", "'\"'\"'") }}
+password = {{ mysql_root_password }}
 
 {#-
 ===== FETCH DATA =====
 -#}
 {%- from "mysql/defaults.yaml" import rawmap with context -%}
-{%- from "mysql/supported_sections.yaml" import supported_sections with context -%}
-{%- set datamap = salt['grains.filter_by'](rawmap, grain='os', merge=salt['pillar.get']('mysql:clients:lookup')) -%}
+{%- from "mysql/supported_sections.yaml" import client_supported_sections with context -%}
+{%- set datamap = salt['grains.filter_by'](rawmap, grain='os', merge=salt['pillar.get']('mysql:client:lookup')) -%}
 {#-
 ===== COMBINE DATA =====
 -#}
-{%- set goodParamList = datamap.clients_config.sections -%}
-{%- for section_name in supported_sections -%}
-	{%- set sectdict = datamap.clients_config.sections[section_name] | default({}) -%}
-	{%- for mparam, mvalue in salt['pillar.get']('mysql:clients:'+section_name, {}).items() -%}
+{%- set goodParamList = datamap.config.sections -%}
+{%- for section_name in client_supported_sections -%}
+	{%- set sectdict = datamap.config.sections[section_name] | default({}) -%}
+	{%- for mparam, mvalue in salt['pillar.get']('mysql:client:'+section_name, {}).items() -%}
 		{%- set mparamUnderscore = mparam | replace('-','_') -%}
 		{%- do sectdict.update({mparamUnderscore:mvalue}) -%}
 	{%- endfor -%}
@@ -41,5 +41,3 @@ password = {{ mysql_root_password|replace("'", "'\"'\"'") }}
 {%- endfor -%}
 {%- endif -%}
 {%- endfor %}
-
-{{ datamap.clients_config.append | default('') }}

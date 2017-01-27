@@ -48,10 +48,13 @@ root_my_cnf:
     - user: root
     - group: root
     - mode: 600
+    {%- if mysql_root_user and mysql_root_password %}
+    - context:
+       mysql_root_user: {{ mysql_root_user }}
+       mysql_root_password: {{ mysql_root_password|replace("'", "'\"'\"'") }}
     - require:
-      {%- if mysql_root_user and mysql_root_password %}
       - cmd: mysql_root_password
-      {%- endif %}
+    {%- endif %}
 
 {% for host in ['localhost', 'localhost.localdomain', salt['grains.get']('fqdn')] %}
 mysql_delete_anonymous_user_{{ host }}:
