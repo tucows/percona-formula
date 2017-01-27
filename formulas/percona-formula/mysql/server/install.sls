@@ -78,7 +78,7 @@ mysql_delete_anonymous_user_{{ host }}:
 
 mysql_tzinfo_to_sql:
   cmd.run:
-    - name: mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql --user={{ mysql_root_user }} --password='{{ mysql_root_password|replace("'", "'\"'\"'") }}' mysql
+    - name: mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql mysql
     - require:
       - service: mysqld
 
