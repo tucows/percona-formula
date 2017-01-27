@@ -10,6 +10,7 @@ include:
 {% set mysql_root_user = salt['pillar.get']('mysql:server:root_user', 'root') %}
 {% set mysql_root_password = salt['pillar.get']('mysql:server:root_password', salt['random.get_str'](32)) %}
 {% set mysql_host = salt['pillar.get']('mysql:server:host', 'localhost') %}
+{% set defaults_extra_file = salt['pillar.get']('mysql:defaults_extra_file', mysql.defaults_extra_file) %}
 
 mysql_debconf_utils:
   pkg.installed:
@@ -34,9 +35,15 @@ percona-server-pkg:
       - debconf: mysql_debconf
 
 mysql_root_password:
-  cmd.run:
-    - name: mysqladmin --user {{ mysql_root_user }} password '{{ mysql_root_password|replace("'", "'\"'\"'") }}'
-    - unless: mysql --user {{ mysql_root_user }} --password='{{ mysql_root_password|replace("'", "'\"'\"'") }}' --execute="SELECT 1;"
+  mysql_user:
+    - present
+    - name: {{ mysql_root_user }}
+    - host: localhost
+    - password: {{ mysql_root_password|replace("'", "'\"'\"'") }}
+    - connection_default_file: {{ defaults_extra_file }}
+    - connection_charset: utf8
+    - saltenv:
+      - LC_ALL: "en_US.utf8"
     - require:
       - service: mysqld
 
@@ -53,7 +60,7 @@ root_my_cnf:
        mysql_root_user: {{ mysql_root_user }}
        mysql_root_password: {{ mysql_root_password|replace("'", "'\"'\"'") }}
     - require:
-      - cmd: mysql_root_password
+      - mysql_user: mysql_root_password
     {%- endif %}
 
 {% for host in ['localhost', 'localhost.localdomain', salt['grains.get']('fqdn')] %}
@@ -72,7 +79,7 @@ mysql_delete_anonymous_user_{{ host }}:
       - service: mysqld
       - pkg: mysql_python
       {%- if mysql_root_user and mysql_root_password %}
-      - cmd: mysql_root_password
+      - mysql_user: mysql_root_password
       {%- endif %}
 {% endfor %}
 
