@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 # vim: ft=sls
 include:
-  - mysql.repo
-  - mysql.config
-  - mysql.python
+  - .repo
+  - .python
 
 {% from "mysql/defaults.yaml" import rawmap with context %}
 
@@ -33,8 +32,13 @@ percona-server-pkg:
     - name: {{ mysql.server }}
     - require:
       - debconf: mysql_debconf
-    - require_in:
-      - file: mysql_config
+
+mysql_root_password:
+  cmd.run:
+    - name: mysqladmin --user {{ mysql_root_user }} password '{{ mysql_root_password|replace("'", "'\"'\"'") }}'
+    - unless: mysql --user {{ mysql_root_user }} --password='{{ mysql_root_password|replace("'", "'\"'\"'") }}' --execute="SELECT 1;"
+    - require:
+      - service: mysqld
 
 {% for host in ['localhost', 'localhost.localdomain', salt['grains.get']('fqdn')] %}
 mysql_delete_anonymous_user_{{ host }}:
@@ -56,6 +60,12 @@ mysql_delete_anonymous_user_{{ host }}:
       {%- endif %}
 {% endfor %}
 
+mysql_tzinfo_to_sql:
+  cmd.run:
+    - name: mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql --user={{ mysql_root_user }} --password='{{ mysql_root_password|replace("'", "'\"'\"'") }}' mysql
+    - require:
+      - service: mysqld
+
 mysqld:
   service.running:
     - name: {{ mysql.service }}
@@ -64,4 +74,14 @@ mysqld:
       - pkg: {{ mysql.server }}
     - watch:
       - pkg: {{ mysql.server }}
+
+# Require this to apply configuration file WITH zone settings
+mysqld_config_changed:
+  service.running:
+    - name: {{ mysql.service }}
+    - enable: True
+    - restart: True
+    - require:
+      - service: mysqld
+    - watch:
       - file: mysql_config
