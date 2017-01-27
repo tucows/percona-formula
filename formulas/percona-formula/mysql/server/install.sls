@@ -40,6 +40,19 @@ mysql_root_password:
     - require:
       - service: mysqld
 
+root_my_cnf:
+  file.managed:
+    - name: /root/.my.cnf
+    - template: jinja
+    - source: salt://mysql/files/root_my.cnf
+    - user: root
+    - group: root
+    - mode: 600
+    - require:
+      {%- if mysql_root_user and mysql_root_password %}
+      - cmd: mysql_root_password
+      {%- endif %}
+
 {% for host in ['localhost', 'localhost.localdomain', salt['grains.get']('fqdn')] %}
 mysql_delete_anonymous_user_{{ host }}:
   mysql_user:
