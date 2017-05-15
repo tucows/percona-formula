@@ -8,11 +8,8 @@ verifier:
   name: inspec
 
 platforms:
-  - name: ubuntu-12.04
   - name: ubuntu-14.04
   - name: ubuntu-16.04
-  - name: debian-7
-  - name: debian-8
 
 provisioner:
   name: salt_solo
