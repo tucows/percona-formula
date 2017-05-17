@@ -1,22 +1,23 @@
-================
-template-formula
-================
 
-A saltstack formula that is empty. It has dummy content to help with a quick
-start on a new formula.
+# percona-formula [![Build Status](https://travis-ci.org/Perceptyx/percona-formula.png?branch=master)](https://travis-ci.org/Perceptyx/percona-formula)
 
-.. note::
-
-    See the full `Salt Formulas installation and usage instructions
-    <http://docs.saltstack.com/en/latest/topics/development/conventions/formulas.html>`_.
-
-Available states
 ================
 
-.. contents::
-    :local:
+A saltstack formula that configures Percona Server.
 
-``template``
+
+## Available states
+
+``client``
 ------------
 
-Installs the template package, and starts the associated template service.
+Installs Percona Server client package.
+
+``server``
+------------
+
+- Installs Percona Server Server package
+- Configure root password
+- Remove MySQL users without host or without username
+- Import MySQL timezone information
+- Enables and starts MySQL service
