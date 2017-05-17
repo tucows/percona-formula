@@ -45,23 +45,20 @@ driver:
   https_proxy: <%= http_proxy_url %>
   <% end %>
 
-platforms:
-  - name: ubuntu-16.04
-    driver: docker
-    driver_config:
-      provision_command:
-        - sed -i 's/http\:\/\/archive/http\:\/\/us.archive/g' /etc/apt/sources.list
-        - apt-get clean && rm -rf /var/lib/apt/lists/* && apt-get update
-        <% if proxy_running? %>
-        - echo 'Acquire::http::Proxy "<%= http_proxy_url %>";' > /etc/apt/apt.conf.d/proxy
-        - "env http_proxy=<%= http_proxy_url %> bash -c 'curl -sL http://www.chef.io/chef/install.sh | bash'"
-        - curl -o bootstrap-salt.sh -sL https://bootstrap.saltstack.com
-        - env http_proxy=<%= http_proxy_url %> bash bootstrap-salt.sh -X -d -H <%= http_proxy_url %>
-        <% else %>
-        - "curl -sL http://www.chef.io/chef/install.sh | bash"
-        - curl -o bootstrap-salt.sh -sL https://bootstrap.saltstack.com
-        - bash bootstrap-salt.sh -X -d
-        <% end %>
+driver_config:
+  provision_command:
+    - sed -i 's/http\:\/\/archive/http\:\/\/us.archive/g' /etc/apt/sources.list
+    - apt-get clean && rm -rf /var/lib/apt/lists/* && apt-get update
+    <% if proxy_running? %>
+    - echo 'Acquire::http::Proxy "<%= http_proxy_url %>";' > /etc/apt/apt.conf.d/proxy
+    - "env http_proxy=<%= http_proxy_url %> bash -c 'curl -sL http://www.chef.io/chef/install.sh | bash'"
+    - curl -o bootstrap-salt.sh -sL https://bootstrap.saltstack.com
+    - env http_proxy=<%= http_proxy_url %> bash bootstrap-salt.sh -X -d -H <%= http_proxy_url %>
+    <% else %>
+    - "curl -sL http://www.chef.io/chef/install.sh | bash"
+    - curl -o bootstrap-salt.sh -sL https://bootstrap.saltstack.com
+    - bash bootstrap-salt.sh -X -d
+    <% end %>
 
 provisioner:
   # installs from an http:// source to enable better caching through

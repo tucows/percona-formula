@@ -4,9 +4,6 @@ formula = YAML.load_file('FORMULA')
 formula_name = formula['name']
 %>
 ---
-verifier:
-  name: inspec
-
 platforms:
   - name: ubuntu-14.04
   - name: ubuntu-16.04
