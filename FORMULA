@@ -1,0 +1,8 @@
+name: mysql
+os: Ubuntu
+os_family: Debian
+version: 201705
+release: 1
+minimum_version: 2016.11.4
+summary: Formula for installing Percona MySQL
+description: Formula for installing Percona MySQL database client and/or server
