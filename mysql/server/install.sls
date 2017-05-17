@@ -85,7 +85,7 @@ mysql_delete_anonymous_user_{{ host }}:
 mysql_tzinfo_to_sql:
   cmd.run:
     - name: mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql --defaults-extra-file=/root/.my.cnf mysql
-    - unless: mysql --defaults-extra-file=/root/.my.cnf mysql --execute="SHOW TABLES;" | grep -q 'time_zone'
+    - unless: test $(mysql --defaults-extra-file=/root/.my.cnf mysql -sN --execute="select count(*) from time_zone;") -gt 0
     - require:
       - service: mysqld
       - file: root_my_cnf
@@ -98,14 +98,3 @@ mysqld:
       - pkg: {{ mysql.server }}
     - watch:
       - pkg: {{ mysql.server }}
-
-# Require this to apply configuration file WITH zone settings
-mysqld_config_changed:
-  service.running:
-    - name: {{ mysql.service }}
-    - enable: True
-    - restart: True
-    - require:
-      - service: mysqld
-    - watch:
-      - file: mysql_config

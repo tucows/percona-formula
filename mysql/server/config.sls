@@ -12,3 +12,8 @@ mysql_config:
     - user: root
     - group: root
     - mode: 644
+  module.run:
+    - name: service.restart
+    - m_name: {{ mysql.service }}
+    - require:
+      - file: mysql_config
