@@ -2,10 +2,29 @@
 # vim: ft=sls
 include:
   - .repo
+  - mysql.custom_version
 
 {% from "mysql/defaults.yaml" import rawmap with context %}
 {%- set mysql = salt['grains.filter_by'](rawmap, grain='os', merge=salt['pillar.get']('mysql:lookup')) %}
 
 mysql-pkg:
+{# We want to install a custom version and it's not in repository #}
+{%- if mysql.version is defined and salt['cmd.retcode']('apt-cache madison ' ~ mysql.pkg_prefix ~ '-' ~ mysql.major_version ~ ' | grep -qP \'(^|\s)\K' ~ mysql.pkg_prefix ~ '-' ~ mysql.major_version ~ '(?=\s|$)\' | grep -qP \'(^|\s)\K' ~ mysql.version ~ '-1(?=\s|$)\'', python_shell=True) == 1 %}
+{%- set libperconaserverclient_version = salt['cmd.run_stdout']('curl -sL ' ~ mysql.percona_url ~ ' | grep -oP "\/downloads[^\s>]+libperconaserverclient([0-9|\.]*)_[^\s>]+\.' ~ grains['oscodename'] | lower ~ '_' ~ mysql.os_arch ~ '\.deb" | sed -n "s/\/downloads\(.*\)libperconaserverclient\([0-9|\.]*\)\_\(.*\)/\\2/p"', python_shell=True) %}
   pkg.installed:
-    - name: {{ mysql.client }}
+    - sources:
+      - {{ mysql.pkg_prefix }}-common-{{ mysql.major_version }}: /tmp/percona/{{ mysql.pkg_prefix }}-common-{{ mysql.version_suffix_w_major }}
+      - libperconaserverclient{{ libperconaserverclient_version }}: /tmp/percona/libperconaserverclient{{ libperconaserverclient_version }}_{{ mysql.version_suffix }}
+      - libperconaserverclient{{ libperconaserverclient_version }}-dev: /tmp/percona/libperconaserverclient{{ libperconaserverclient_version }}-dev_{{ mysql.version_suffix }}
+      - {{ mysql.pkg_prefix }}-client-{{ mysql.major_version }}: /tmp/percona/{{ mysql.pkg_prefix }}-client-{{ mysql.version_suffix_w_major }}
+      {%- if mysql.major_version == '5.6' %} {# Percona removed packages like percona-server-client-5.6_5.6.36-82.0-1.trusty_amd64.deb in 5.7 release #}
+      - {{ mysql.pkg_prefix }}-client: /tmp/percona/{{ mysql.pkg_prefix }}-client_{{ mysql.version_suffix }}
+      {% endif %}
+    - require:
+      - sls: mysql.custom_version
+{% else %}
+  pkg.installed:
+    - name: {{ mysql.pkg_prefix }}-client-{{ mysql.major_version }}
+    - require:
+      - debconf: mysql_debconf
+{% endif %} {# if mysql.version is defined... #}
