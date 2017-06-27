@@ -1,4 +1,4 @@
-mysql:
+percona:
 
   # Ubuntu package versions are like: 5.6.36-82.0-1.precise (Please remove -1.precise)
   # We configure the release version in repo.sls

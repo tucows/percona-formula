@@ -2,10 +2,10 @@
 # vim: ft=sls
 include:
   - .repo
-  - mysql.custom_version
+  - percona.custom_version
 
-{% from "mysql/defaults.yaml" import rawmap with context %}
-{%- set mysql = salt['grains.filter_by'](rawmap, grain='os', merge=salt['pillar.get']('mysql:lookup')) %}
+{% from "percona/defaults.yaml" import rawmap with context %}
+{%- set mysql = salt['grains.filter_by'](rawmap, grain='os', merge=salt['pillar.get']('percona:lookup')) %}
 
 mysql-pkg:
 {# We want to install a custom version and it's not in repository #}
@@ -21,7 +21,7 @@ mysql-pkg:
       - {{ mysql.pkg_prefix }}-client: /tmp/percona/{{ mysql.pkg_prefix }}-client_{{ mysql.version_suffix }}
       {% endif %}
     - require:
-      - sls: mysql.custom_version
+      - sls: percona.custom_version
 {% else %}
   pkg.installed:
     - name: {{ mysql.pkg_prefix }}-client-{{ mysql.major_version }}
