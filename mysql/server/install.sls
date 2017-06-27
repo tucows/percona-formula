@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: ft=sls
+{% from "mysql/defaults.yaml" import rawmap with context %}
+
 include:
   - mysql.repo
   - mysql.python
-
-{% from "mysql/defaults.yaml" import rawmap with context %}
+  - mysql.custom_version
 
 {% set mysql = salt['grains.filter_by'](rawmap, grain='os', merge=salt['pillar.get']('mysql:lookup')) %}
 {% set mysql_root_user = salt['pillar.get']('mysql:server:root_user', 'root') %}
@@ -18,21 +19,37 @@ mysql_debconf_utils:
 
 mysql_debconf:
   debconf.set:
-    - name: {{ mysql.server }}
+    - name: {{ mysql.pkg_prefix }}
     - data:
-        '{{ mysql.server_short }}/root_password': {'type': 'password', 'value': '{{ mysql_root_password }}'}
-        '{{ mysql.server_short }}/root_password_again': {'type': 'password', 'value': '{{ mysql_root_password }}'}
-        '{{ mysql.server }}/start_on_boot': {'type': 'boolean', 'value': 'true'}
+        '{{ mysql.pkg_prefix }}-server/root_password': {'type': 'password', 'value': '{{ mysql_root_password }}'}
+        '{{ mysql.pkg_prefix }}-server/root_password_again': {'type': 'password', 'value': '{{ mysql_root_password }}'}
+        '{{ mysql.pkg_prefix }}-server/start_on_boot': {'type': 'boolean', 'value': 'true'}
     - require_in:
-      - pkg: {{ mysql.server }}
+      - pkg:  percona-server-pkg
     - require:
       - pkg: {{ mysql.debconf_utils }}
 
 percona-server-pkg:
+{# We want to install a custom version and it's not in repository #}
+{%- if mysql.version is defined and salt['cmd.retcode']('apt-cache madison ' ~ mysql.pkg_prefix ~ '-' ~ mysql.major_version ~ ' | grep -qP \'(^|\s)\K' ~ mysql.pkg_prefix ~ '-' ~ mysql.major_version ~ '(?=\s|$)\' | grep -qP \'(^|\s)\K' ~ mysql.version ~ '-1(?=\s|$)\'', python_shell=True) == 1 %}
   pkg.installed:
-    - name: {{ mysql.server }}
+    - sources:
+      - {{ mysql.pkg_prefix }}-server-{{ mysql.major_version }}: /tmp/percona/{{ mysql.pkg_prefix }}-server-{{ mysql.version_suffix_w_major }}
+      {%- if mysql.major_version == '5.6' %} {# Percona removed packages like percona-server-server-5.6_5.6.36-82.0-1.trusty_amd64.deb in 5.7 release #}
+      - {{ mysql.pkg_prefix }}-server: /tmp/percona/{{ mysql.pkg_prefix }}-server_{{ mysql.version_suffix }}
+      {% endif %}
+    - require:
+      - sls: mysql.custom_version
+        # Download all Percona software and install from standalone .deb files
+        #wget https://www.percona.com/downloads/XtraBackup/Percona-XtraBackup-2.4.3/binary/debian/trusty/x86_64/percona-xtrabackup-24_2.4.3-1.trusty_amd64.deb
+        #wget https://www.percona.com/downloads/percona-toolkit/2.2.18/deb/percona-toolkit_2.2.18-1_all.deb
+        #wget https://www.percona.com/downloads/percona-monitoring-plugins/1.1.6/percona-nagios-plugins_1.1.6-1_all.deb
+{% else %}
+  pkg.installed:
+    - name: {{ mysql.pkg_prefix }}-server-{{ mysql.major_version }}
     - require:
       - debconf: mysql_debconf
+{% endif %} {# if mysql.version is defined... #}
 
 mysql_root_password:
   mysql_user:
@@ -94,7 +111,5 @@ mysqld:
   service.running:
     - name: {{ mysql.service }}
     - enable: True
-    - require:
-      - pkg: {{ mysql.server }}
     - watch:
-      - pkg: {{ mysql.server }}
+      - pkg: percona-server-pkg

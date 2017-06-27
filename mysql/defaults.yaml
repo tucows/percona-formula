@@ -2,21 +2,47 @@
 # vim: ft=yaml
 # SET ALL PARAMS IN CONFIG SECTION USING UNDERSCORE, NOT HYPHEN
 # so that it works correctly
-{% set version = salt['pillar.get']('percona.version', '5.6') %}
+{%- if salt['pillar.get']('mysql:version') is defined and salt['pillar.get']('mysql:version') != '' %}
+{%- set version = salt['pillar.get']('mysql:version') %}
+{%- set major_version = version.split('.')[0] ~ '.' ~ version.split('.')[1] %}
+{#- https://www.percona.com/downloads/Percona-Server-5.6/Percona-Server-5.6.31-77.0/binary/debian/trusty/x86_64/ -#}
+{%- set tarball_os_arch = 'x86_64' if (grains['cpuarch']=='x86_64' or grains['cpuarch']=='amd64') else 'i386' %}
+{%- set tarball_suffix = "-{{ grains['oscodename'] }}-{{ os_arch }}-bundle" %}
+{%- set os_arch = 'amd64' if (grains['cpuarch']=='x86_64' or grains['cpuarch']=='amd64') else 'i386' %}
+{# percona-server-client-5.6_5.6.31-77.0-1.trusty_amd64.deb #}
+{%- set version_suffix_w_major = "{{ mysql.major_version }}_{{ mysql.version }}-1.{{ grains['oscodename'] }}_{{ os_arch }}.deb" %}
+{# percona-server-client_5.6.31-77.0-1.trusty_amd64.deb #}
+{%- set version_suffix = "{{ mysql.version }}-1.{{ grains['oscodename'] }}_{{ os_arch }}.deb" %}
+{%- set percona_url = "https://www.percona.com/downloads/Percona-Server-" ~ major_version ~ "/Percona-Server-" ~ version ~ "/binary/" ~ grains['os_family'] | lower ~ "/" ~ grains['oscodename'] | lower ~ "/" ~ tarball_os_arch | lower ~ "/" %}
+{% else %}
+{%- set major_version = '5.6' %}
+{% endif %}
 {% set innodb_buffer_pool_size = salt['grains.get']('mem_total', '1024') * 0.6 %}
 {% load_yaml as rawmap %}
 
 Ubuntu:
-  client: percona-server-client-{{ version }}
-  server: percona-server-server-{{ version }}
-  server_short: percona-server-server
+  pkg_prefix: percona-server
+  major_version: {{ major_version }}
+{%- if salt['pillar.get']('mysql:version') is defined and salt['pillar.get']('mysql:version') != '' %}
+  version: {{ version }}
+  tarball_os_arch: {{ 'x86_64' if grains['cpuarch']=='x86_64' or grains['cpuarch']=='amd64' else 'i386' }}
+  tarball_suffix: "-{{ grains['oscodename'] }}-{{ tarball_os_arch }}-bundle"
+  os_arch: {{ 'amd64' if grains['cpuarch']=='x86_64' or grains['cpuarch']=='amd64' else 'i386' }}
+  version_suffix_w_major: {{ major_version }}_{{ version }}-1.{{ grains['oscodename'] }}_{{ os_arch }}.deb
+  version_suffix: {{ version }}-1.{{ grains['oscodename'] }}_{{ os_arch }}.deb
+  percona_url: {{ percona_url }}
+{% endif %}
   service: mysql
   python: python-mysqldb
   debconf_utils: debconf-utils
   defaults_extra_file: /etc/mysql/debian.cnf
   dev: libmysqlclient-dev
   config:
+    {%- if major_version == '5.7' %}
+    file: /etc/mysql/percona-server.conf.d/percona.cnf
+    {% else %}
     file: /etc/mysql/conf.d/percona.cnf
+    {% endif %}
     sections:
       client:
         default_character_set: utf8
@@ -29,7 +55,9 @@ Ubuntu:
         bind_address: 0.0.0.0
         character_set_server: utf8
         default_storage_engine: InnoDB
-        pid_file: /var/run/mysqld/mysqld.pid
+        # Percona doesn't start if you don't have a pid-file argument
+        # pid_file doesn't work either
+        pid-file: /var/run/mysqld/mysqld.pid
         socket: /var/run/mysqld/mysqld.sock
         #ssl_ca: /etc/mysql/cacert.pem
         #ssl_cert: /etc/mysql/server.pem
@@ -37,7 +65,7 @@ Ubuntu:
         user: mysql
         skip_name_resolve: noarg_present
         key_buffer_size: 32M
-        myisam_recover: FORCE,BACKUP
+        myisam_recover_options: FORCE,BACKUP
         innodb: FORCE
         innodb_strict_mode: 1
         max_allowed_packet: 16M

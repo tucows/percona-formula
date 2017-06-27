@@ -7,6 +7,7 @@ system "salt-call --local --config-dir=/tmp/kitchen/etc/salt -l quiet cp.get_tem
 
 # Configure OS specific parameters
 if ['debian', 'ubuntu'].include?(os[:family])
+  $codename = `cat /etc/lsb-release | grep DISTRIB_CODENAME | cut -d\= -f 2 | tr -d '\n\r'`
   unless File.exists?('/bin/netstat')
     system "apt-get install -y net-tools"
   end

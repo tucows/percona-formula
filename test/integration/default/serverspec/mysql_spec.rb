@@ -10,11 +10,27 @@ mysql_query = "mysql --defaults-extra-file=/root/.my.cnf mysql -sN -e"
 describe "MySQL" do
   # ===== MySQL critical tests ======
   it "server package is installed" do
-    expect(package(mysql['server'])).to be_installed
+    expect(package("#{mysql['pkg_prefix']}-server-#{mysql['major_version']}")).to be_installed
   end
 
   it "client package is installed" do
-    expect(package(mysql['client'])).to be_installed
+    expect(package("#{mysql['pkg_prefix']}-client-#{mysql['major_version']}")).to be_installed
+  end
+
+  if mysql['version'] then
+    if mysql['major_version'] == '5.6' then
+      version_suffix = ''
+    else
+      version_suffix = "-#{mysql['major_version']}"
+    end
+
+    it "server package version is #{mysql['version']}-1.#{$codename}" do
+      expect(package("#{mysql['pkg_prefix']}-server#{version_suffix}")).to be_installed.with_version("#{mysql['version']}-1.#{$codename}")
+    end
+
+    it "client package version is #{mysql['version']}-1.#{$codename}" do
+      expect(package("#{mysql['pkg_prefix']}-client#{version_suffix}")).to be_installed.with_version("#{mysql['version']}-1.#{$codename}")
+    end
   end
 
   it "is listening on port #{mysql['config']['sections']['mysqld']['port'] || 3306}" do
