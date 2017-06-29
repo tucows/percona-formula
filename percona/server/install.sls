@@ -63,7 +63,7 @@ mysql_root_password:
       - LC_ALL: "en_US.utf8"
     - require:
       - service: mysqld
-      - pkg: mysql_python
+      - pkg: {{ mysql.python }}
 
 root_my_cnf:
   file.managed:
@@ -93,7 +93,7 @@ mysql_delete_anonymous_user_{{ host }}:
     - connection_charset: utf8
     - require:
       - service: mysqld
-      - pkg: mysql_python
+      - pkg: {{ mysql.python }}
       {%- if mysql_root_user and mysql_root_password %}
       - mysql_user: mysql_root_password
       {%- endif %}
