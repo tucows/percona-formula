@@ -1,0 +1,9 @@
+{%- from "percona/defaults.yaml" import rawmap with context %}
+{%- set mysql = salt['grains.filter_by'](rawmap, grain='os', merge=salt['pillar.get']('percona')) %}
+{%- set percona_toolkit_url = 'https://www.percona.com/downloads/percona-toolkit/LATEST/binary/' ~ grains['os_family'] | lower ~ '/' ~ grains['oscodename'] ~ '/' ~ mysql.tarball_os_arch ~ '/' %}
+{%- set percona_toolkit_pkg_url = salt['cmd.run_stdout']('curl -sL ' ~ percona_toolkit_url ~ ' | grep -oP "\/downloads[^\s>]+\.deb" | tail -1 | sed -e "s/^/https\:\/\/www.percona.com/"', python_shell=True) %}
+
+percona-toolkit:
+  pkg.installed:
+    - sources:
+      - percona-toolkit: {{ percona_toolkit_pkg_url }}

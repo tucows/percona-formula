@@ -2,5 +2,7 @@
 # vim: ft=sls
 
 include:
-  - .client
-  - .server
+  - percona.client
+  - percona.server
+  - percona.toolkit
+  - percona.xtrabackup
