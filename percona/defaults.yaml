@@ -2,13 +2,14 @@
 # vim: ft=yaml
 # SET ALL PARAMS IN CONFIG SECTION USING UNDERSCORE, NOT HYPHEN
 # so that it works correctly
-{%- if salt['pillar.get']('mysql:version') is defined and salt['pillar.get']('mysql:version') != '' %}
-{%- set version = salt['pillar.get']('mysql:version') %}
-{%- set major_version = version.split('.')[0] ~ '.' ~ version.split('.')[1] %}
 {#- https://www.percona.com/downloads/Percona-Server-5.6/Percona-Server-5.6.31-77.0/binary/debian/trusty/x86_64/ -#}
 {%- set tarball_os_arch = 'x86_64' if (grains['cpuarch']=='x86_64' or grains['cpuarch']=='amd64') else 'i386' %}
 {%- set tarball_suffix = "-{{ grains['oscodename'] }}-{{ os_arch }}-bundle" %}
 {%- set os_arch = 'amd64' if (grains['cpuarch']=='x86_64' or grains['cpuarch']=='amd64') else 'i386' %}
+
+{%- if salt['pillar.get']('percona:version') is defined and salt['pillar.get']('percona:version') != '' %}
+{%- set version = salt['pillar.get']('percona:version') %}
+{%- set major_version = version.split('.')[0] ~ '.' ~ version.split('.')[1] %}
 {# percona-server-client-5.6_5.6.31-77.0-1.trusty_amd64.deb #}
 {%- set version_suffix_w_major = "{{ mysql.major_version }}_{{ mysql.version }}-1.{{ grains['oscodename'] }}_{{ os_arch }}.deb" %}
 {# percona-server-client_5.6.31-77.0-1.trusty_amd64.deb #}
@@ -23,11 +24,11 @@
 Ubuntu:
   pkg_prefix: percona-server
   major_version: {{ major_version }}
-{%- if salt['pillar.get']('mysql:version') is defined and salt['pillar.get']('mysql:version') != '' %}
-  version: {{ version }}
   tarball_os_arch: {{ 'x86_64' if grains['cpuarch']=='x86_64' or grains['cpuarch']=='amd64' else 'i386' }}
   tarball_suffix: "-{{ grains['oscodename'] }}-{{ tarball_os_arch }}-bundle"
   os_arch: {{ 'amd64' if grains['cpuarch']=='x86_64' or grains['cpuarch']=='amd64' else 'i386' }}
+{%- if salt['pillar.get']('percona:version') is defined and salt['pillar.get']('percona:version') != '' %}
+  version: {{ version }}
   version_suffix_w_major: {{ major_version }}_{{ version }}-1.{{ grains['oscodename'] }}_{{ os_arch }}.deb
   version_suffix: {{ version }}-1.{{ grains['oscodename'] }}_{{ os_arch }}.deb
   percona_url: {{ percona_url }}

@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 # vim: ft=sls
-{% from "mysql/defaults.yaml" import rawmap with context %}
+{% from "percona/defaults.yaml" import rawmap with context %}
 
 include:
-  - mysql.repo
-  - mysql.python
-  - mysql.custom_version
+  - percona.repo
+  - percona.python
+  - percona.custom_version
 
-{% set mysql = salt['grains.filter_by'](rawmap, grain='os', merge=salt['pillar.get']('mysql:lookup')) %}
-{% set mysql_root_user = salt['pillar.get']('mysql:server:root_user', 'root') %}
-{% set mysql_root_password = salt['pillar.get']('mysql:server:root_password', salt['random.get_str'](32)) %}
-{% set mysql_host = salt['pillar.get']('mysql:server:host', 'localhost') %}
-{% set defaults_extra_file = salt['pillar.get']('mysql:defaults_extra_file', mysql.defaults_extra_file) %}
+{% set mysql = salt['grains.filter_by'](rawmap, grain='os', merge=salt['pillar.get']('percona:lookup')) %}
+{% set mysql_root_user = salt['pillar.get']('percona:server:root_user', 'root') %}
+{% set mysql_root_password = salt['pillar.get']('percona:server:root_password', salt['random.get_str'](32)) %}
+{% set mysql_host = salt['pillar.get']('percona:server:host', 'localhost') %}
+{% set defaults_extra_file = salt['pillar.get']('percona:defaults_extra_file', mysql.defaults_extra_file) %}
 
 mysql_debconf_utils:
   pkg.installed:
@@ -39,7 +39,7 @@ percona-server-pkg:
       - {{ mysql.pkg_prefix }}-server: /tmp/percona/{{ mysql.pkg_prefix }}-server_{{ mysql.version_suffix }}
       {% endif %}
     - require:
-      - sls: mysql.custom_version
+      - sls: percona.custom_version
         # Download all Percona software and install from standalone .deb files
         #wget https://www.percona.com/downloads/XtraBackup/Percona-XtraBackup-2.4.3/binary/debian/trusty/x86_64/percona-xtrabackup-24_2.4.3-1.trusty_amd64.deb
         #wget https://www.percona.com/downloads/percona-toolkit/2.2.18/deb/percona-toolkit_2.2.18-1_all.deb
@@ -63,13 +63,13 @@ mysql_root_password:
       - LC_ALL: "en_US.utf8"
     - require:
       - service: mysqld
-      - pkg: mysql_python
+      - pkg: {{ mysql.python }}
 
 root_my_cnf:
   file.managed:
     - name: /root/.my.cnf
     - template: jinja
-    - source: salt://mysql/files/root_my.cnf
+    - source: salt://percona/files/root_my.cnf
     - user: root
     - group: root
     - mode: 600
@@ -93,7 +93,7 @@ mysql_delete_anonymous_user_{{ host }}:
     - connection_charset: utf8
     - require:
       - service: mysqld
-      - pkg: mysql_python
+      - pkg: {{ mysql.python }}
       {%- if mysql_root_user and mysql_root_password %}
       - mysql_user: mysql_root_password
       {%- endif %}

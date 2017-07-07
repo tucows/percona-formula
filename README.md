@@ -7,9 +7,19 @@ A saltstack formula that configures Percona Server.
 
 ## Available states
 
-- [`client`](#Client)
+- [`client`](#client)
 
-- [`server`](#Server)
+- [`server`](#server)
+
+- monitoring.[`cacti`](#monitoring-cacti)
+
+- monitoring.[`nagios`](#monitoring-nagios)
+
+- monitoring.[`zabbix`](#monitoring-zabbix)
+
+- [`toolkit`](#toolkit)
+
+- [`xtrabackup`](#xtrabackup)
 
 ### Client
 
@@ -23,4 +33,22 @@ A saltstack formula that configures Percona Server.
 - Import MySQL timezone information
 - Enables and starts MySQL service
 
- 
+### Monitoring Cacti
+
+- Installs Percona Monitoring templates for Cacti
+
+### Monitoring Nagios
+
+- Installs Percona Monitoring plugins for Nagios
+
+### Monitoring Zabbix
+
+- Installs Percona Monitoring templates for Zabbix
+
+### Toolkit
+
+- Installs Percona Toolkit
+
+### Xtrabackup
+
+- Installs Percona Xtrabackup

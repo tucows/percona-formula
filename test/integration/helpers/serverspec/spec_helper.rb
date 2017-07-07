@@ -3,7 +3,7 @@ require 'yaml'
 
 set :backend, :exec
 
-system "salt-call --local --config-dir=/tmp/kitchen/etc/salt -l quiet cp.get_template salt://mysql/files/rawmap.yml /tmp/mysql.config 2>&1 > /dev/null"
+system "salt-call --local --config-dir=/tmp/kitchen/etc/salt -l quiet cp.get_template salt://percona/files/rawmap.yml /tmp/mysql.config 2>&1 > /dev/null"
 
 # Configure OS specific parameters
 if ['debian', 'ubuntu'].include?(os[:family])

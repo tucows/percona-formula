@@ -1,9 +1,9 @@
-{% from "mysql/defaults.yaml" import rawmap with context %}
+{% from "percona/defaults.yaml" import rawmap with context %}
 
 include:
-  - mysql.repo
+  - percona.repo
 
-{% set mysql = salt['grains.filter_by'](rawmap, grain='os', merge=salt['pillar.get']('mysql:lookup')) %}
+{% set mysql = salt['grains.filter_by'](rawmap, grain='os', merge=salt['pillar.get']('percona:lookup')) %}
 
 {# We want to install a custom version and it's not in repository #}
 {%- if (mysql.version is defined and mysql.version != '') and salt['cmd.retcode']('apt-cache madison ' ~ mysql.pkg_prefix ~ '-' ~ mysql.major_version ~ ' | grep -qP \'(^|\s)\K' ~ mysql.pkg_prefix ~ '-' ~ mysql.major_version ~ '(?=\s|$)\' | grep -qP \'(^|\s)\K' ~ mysql.version ~ '-1(?=\s|$)\'', python_shell=True) == 1 %}
