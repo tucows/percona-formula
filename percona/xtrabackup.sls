@@ -4,7 +4,9 @@
 {%- set percona_xtrabackup_pkg_url = salt['cmd.run_stdout']('curl -sL ' ~ percona_xtrabackup_url ~ ' | grep -oP "\/downloads[^\s>]+percona-xtrabackup-([0-9])+[^\s]+.' ~ grains['oscodename'] ~ '_' ~ mysql.os_arch ~ '\.deb" | tail -1 | sed -e "s/^/https\:\/\/www.percona.com/"', python_shell=True) %}
 {%- set percona_xtrabackup_version = salt['cmd.run_stdout']('echo ' ~ percona_xtrabackup_pkg_url ~ ' | grep -oP "percona-xtrabackup-([0-9]+)"', python_shell=True) %}
 
+{%- if 1 == salt['cmd.retcode']("dpkg-query -f '${Status}' -W " ~ percona_xtrabackup_version ~ " | grep -E '^(install|hold) ok installed$'", python_shell=True) %}
 {{ percona_xtrabackup_version }}:
   pkg.installed:
     - sources:
       - {{ percona_xtrabackup_version }}: {{ percona_xtrabackup_pkg_url }}
+{% endif -%}
