@@ -40,10 +40,6 @@ percona-server-pkg:
       {% endif %}
     - require:
       - sls: percona.custom_version
-        # Download all Percona software and install from standalone .deb files
-        #wget https://www.percona.com/downloads/XtraBackup/Percona-XtraBackup-2.4.3/binary/debian/trusty/x86_64/percona-xtrabackup-24_2.4.3-1.trusty_amd64.deb
-        #wget https://www.percona.com/downloads/percona-toolkit/2.2.18/deb/percona-toolkit_2.2.18-1_all.deb
-        #wget https://www.percona.com/downloads/percona-monitoring-plugins/1.1.6/percona-nagios-plugins_1.1.6-1_all.deb
 {% else %}
   pkg.installed:
     - name: {{ mysql.pkg_prefix }}-server-{{ mysql.major_version }}
