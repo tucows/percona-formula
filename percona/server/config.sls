@@ -15,7 +15,7 @@ mysql_config:
   module.run:
     - name: service.restart
     - m_name: {{ mysql.service }}
-    - watch:
+    - onchanges:
       - file: mysql_config
 
 {# If you use old 5.6 versions with a big database service start will report
