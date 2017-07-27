@@ -32,6 +32,7 @@ A saltstack formula that configures Percona Server.
 - Remove MySQL users without host or without username
 - Import MySQL timezone information
 - Enables and starts MySQL service
+- When using custom paths for logging ensure mysql-error.log and mysql-slow.log are present with correct permissions
 
 ### Monitoring Cacti
 
