@@ -4,3 +4,4 @@
 include:
   - .install
   - .config
+  - .logs
