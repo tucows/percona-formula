@@ -5,7 +5,7 @@
 {% set mysql = salt['grains.filter_by'](rawmap, grain='os', merge=salt['pillar.get']('percona:lookup')) %}
 {% set mysqld = mysql.config.sections.mysqld %}
 
-{%- if mysql.config.sections.mysqld.log_error is defined %}
+{%- if mysqld.log_error is defined %}
 
 mysql_error_log_file:
   file.managed:
@@ -17,7 +17,7 @@ mysql_error_log_file:
 {%- endif %}
 
 
-{%- if mysql.config.sections.mysqld.slow_query_log_file is defined %}
+{%- if mysqld.slow_query_log_file is defined %}
 
 mysql_slow_query_log_file:
   file.managed:
