@@ -27,6 +27,10 @@ Ubuntu:
   tarball_os_arch: {{ 'x86_64' if grains['cpuarch']=='x86_64' or grains['cpuarch']=='amd64' else 'i386' }}
   tarball_suffix: "-{{ grains['oscodename'] }}-{{ tarball_os_arch }}-bundle"
   os_arch: {{ 'amd64' if grains['cpuarch']=='x86_64' or grains['cpuarch']=='amd64' else 'i386' }}
+  remove_default_logs:
+    - /var/log/mysql.log
+    - /var/log/mysql.err
+    - /var/log/mysql/error.log
 {%- if salt['pillar.get']('percona:version') is defined and salt['pillar.get']('percona:version') != '' %}
   version: {{ version }}
   version_suffix_w_major: {{ major_version }}_{{ version }}-1.{{ grains['oscodename'] }}_{{ os_arch }}.deb
