@@ -27,3 +27,10 @@ mysql_slow_query_log_file:
     - mode: 0640
 
 {%- endif %}
+
+{% set logs_list = mysql.remove_default_logs|default([], True) %}
+{% for log_file in logs_list %}
+remove_{{ log_file }}:
+  file.absent:
+    - name: {{ log_file }}
+{% endfor %}
