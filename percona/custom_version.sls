@@ -24,7 +24,6 @@ percona-custom-version:
     - source: {{ percona_tarball_url }}
     - enforce_toplevel: False
     - skip_verify: True
-    - overwrite: True
     - trim_output: True
     - keep: True
     - if_missing: /tmp/percona
