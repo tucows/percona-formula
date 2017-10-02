@@ -50,7 +50,7 @@ Ubuntu:
     {% endif %}
     sections:
       client:
-        default_character_set: utf8
+        loose_default_character_set: utf8
         port: 3306
         socket: /var/run/mysqld/mysqld.sock
       mysqld_safe:
