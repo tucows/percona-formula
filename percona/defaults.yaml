@@ -105,7 +105,7 @@ Ubuntu:
         tmp_table_size: 32M
         innodb_data_file_path: ibdata1:10M:autoextend
         innodb_file_format: Barracuda
-        innodb_buffer_pool_size: {{ innodb_buffer_pool_size|round|int }}K
+        innodb_buffer_pool_size: {{ innodb_buffer_pool_size|round|int }}M
         innodb_buffer_pool_instances: 64
         innodb_file_per_table: 1
         innodb_flush_log_at_trx_commit: 1
