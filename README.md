@@ -11,6 +11,8 @@ A saltstack formula that configures Percona Server.
 
 - [`server`](#server)
 
+- [`qpress`](#qpress)
+
 - monitoring.[`cacti`](#monitoring-cacti)
 
 - monitoring.[`nagios`](#monitoring-nagios)
@@ -24,6 +26,10 @@ A saltstack formula that configures Percona Server.
 ### Client
 
 - Installs Percona Server client package.
+
+### Qpress
+
+- Installs qpress to be used by Xtrabackup/innobackupex with --compression option.
 
 ### Server
 
