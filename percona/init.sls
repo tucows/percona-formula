@@ -3,6 +3,7 @@
 
 include:
   - percona.client
+  - percona.qpress
   - percona.server
   - percona.toolkit
   - percona.xtrabackup

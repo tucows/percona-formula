@@ -17,6 +17,10 @@ describe "MySQL" do
     expect(package("#{mysql['pkg_prefix']}-client-#{mysql['major_version']}")).to be_installed
   end
 
+  it "qpress package is installed" do
+    expect(package("qpress")).to be_installed
+  end
+
   if mysql['version'] then
     if mysql['major_version'] == '5.6' then
       version_suffix = ''
