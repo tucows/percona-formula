@@ -10,7 +10,7 @@
 mysql_error_log_file:
   file.managed:
     - name: {{ mysqld.log_error }}
-    - owner: {{ mysqld.user }}
+    - user: {{ mysqld.user }}
     - group: {{ mysqld.user }}
     - mode: 0640
 
@@ -22,7 +22,7 @@ mysql_error_log_file:
 mysql_slow_query_log_file:
   file.managed:
     - name: {{ mysqld.slow_query_log_file }}
-    - owner: {{ mysqld.user }}
+    - user: {{ mysqld.user }}
     - group: {{ mysqld.user }}
     - mode: 0640
 
