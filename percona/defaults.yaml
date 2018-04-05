@@ -27,6 +27,7 @@ Ubuntu:
   tarball_os_arch: {{ 'x86_64' if grains['cpuarch']=='x86_64' or grains['cpuarch']=='amd64' else 'i386' }}
   tarball_suffix: "-{{ grains['oscodename'] }}-{{ tarball_os_arch }}-bundle"
   os_arch: {{ 'amd64' if grains['cpuarch']=='x86_64' or grains['cpuarch']=='amd64' else 'i386' }}
+  percona_xtrabackup_version: percona-xtrabackup-24
   remove_default_logs:
     - /var/log/mysql.log
     - /var/log/mysql.err
