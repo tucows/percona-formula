@@ -14,8 +14,8 @@ mysql-pkg:
   pkg.installed:
     - sources:
       - {{ mysql.pkg_prefix }}-common-{{ mysql.major_version }}: /tmp/percona/{{ mysql.pkg_prefix }}-common-{{ mysql.version_suffix_w_major }}
-      - libperconaserverclient{{ libperconaserverclient_version }}: /tmp/percona/libperconaserverclient{{ libperconaserverclient_version }}_{{ mysql.version_suffix }}
-      - libperconaserverclient{{ libperconaserverclient_version }}-dev: /tmp/percona/libperconaserverclient{{ libperconaserverclient_version }}-dev_{{ mysql.version_suffix }}
+      - libperconaserverclient18.1{{ libperconaserverclient_version }}: /tmp/percona/libperconaserverclient18.1{{ libperconaserverclient_version }}_{{ mysql.version_suffix }}
+      - libperconaserverclient18.1{{ libperconaserverclient_version }}-dev: /tmp/percona/libperconaserverclient18.1{{ libperconaserverclient_version }}-dev_{{ mysql.version_suffix }}
       - {{ mysql.pkg_prefix }}-client-{{ mysql.major_version }}: /tmp/percona/{{ mysql.pkg_prefix }}-client-{{ mysql.version_suffix_w_major }}
       {%- if mysql.major_version == '5.6' %} {# Percona removed packages like percona-server-client-5.6_5.6.36-82.0-1.trusty_amd64.deb in 5.7 release #}
       - {{ mysql.pkg_prefix }}-client: /tmp/percona/{{ mysql.pkg_prefix }}-client_{{ mysql.version_suffix }}
