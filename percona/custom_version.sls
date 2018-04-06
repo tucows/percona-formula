@@ -18,10 +18,9 @@ percona-custom-version:
       - psmisc
       - curl
 
-{%- set percona_tarball_url = salt['cmd.run_stdout']('curl -sL ' ~ mysql.percona_url ~ ' | grep -oP "\/downloads[^\s>]+' ~ mysql.tarball_suffix ~ '\.tar" | sed -e "s/^/https\:\/\/www.percona.com/"', python_shell=True) %}
   archive.extracted:
     - name: /tmp/percona
-    - source: {{ percona_tarball_url }}
+    - source: {{ mysql.percona_tarball_url }}
     - enforce_toplevel: False
     - skip_verify: True
     - trim_output: True

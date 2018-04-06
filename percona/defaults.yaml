@@ -37,6 +37,7 @@ Ubuntu:
   version_suffix_w_major: {{ major_version }}_{{ version }}-1.{{ grains['oscodename'] }}_{{ os_arch }}.deb
   version_suffix: {{ version }}-1.{{ grains['oscodename'] }}_{{ os_arch }}.deb
   percona_url: {{ percona_url }}
+  percona_tarball_url: https://www.percona.com/downloads/Percona-Server-5.6/Percona-Server-5.6.39-83.1/binary/debian/xenial/x86_64/Percona-Server-5.6.39-83.1-rda5a1c2923f-{{ grains['oscodename'] }}-x86_64-bundle.tar
 {% endif %}
   service: mysql
   python: python-mysqldb
