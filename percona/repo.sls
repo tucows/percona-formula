@@ -41,7 +41,7 @@ We expect them in format: 5.6.36-82.0-1 and we add the release info
       - pkg: percona-server-pkg
       - pkg: mysql-pkg
 
-{% else %}
+{% endif %}
 
 {%- if grains['os_family'] == 'Debian' %}
 percona-repository:
@@ -81,6 +81,4 @@ percona-repository:
     - require_in:
       - pkg: percona-server-pkg
       - pkg: mysql-pkg
-{% endif %}
-
 {% endif %}
