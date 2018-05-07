@@ -63,6 +63,9 @@ driver_config:
 provisioner:
   # installs from an http:// source to enable better caching through
   # http_proxy, and yes, this is a bit evil
+  additional_minion_config:
+    use_superseded:
+      - module.run
 <% if proxy_running? %>
   http_proxy: <%= http_proxy_url %>
   https_proxy: <%= http_proxy_url %>
