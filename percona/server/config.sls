@@ -13,8 +13,13 @@ mysql_config:
     - group: root
     - mode: 644
   module.run:
+{% if grains['saltversion'] < '2017.7.0' %}
+    - name: service.restart
+    - m_name: {{ mysql.service }}
+{% else %}
     - service.restart:
       - name: {{ mysql.service }}
+{% endif %}
     - onchanges:
       - file: mysql_config
 
