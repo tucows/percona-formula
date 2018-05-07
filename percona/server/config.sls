@@ -13,8 +13,8 @@ mysql_config:
     - group: root
     - mode: 644
   module.run:
-    - name: service.restart
-    - m_name: {{ mysql.service }}
+    - service.restart:
+      - name: {{ mysql.service }}
     - onchanges:
       - file: mysql_config
 
