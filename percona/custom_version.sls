@@ -18,9 +18,11 @@ percona-custom-version:
       - psmisc
       - curl
 
+{%- set percona_tarball_url = "https://www.percona.com/" ~ salt['cmd.run_stdout']('curl -sL -X POST -d "newBrowse=fetch-files&p=Percona-Server-' ~ mysql.major_version ~ '/Percona-Server-' ~ mysql.version ~ '/binary/'~ grains['os_family'] | lower ~'/' ~ grains['oscodename'] | lower ~'" https://www.percona.com/downloads-ajax |grep -oP "/downloads/Percona-Server-[^\s>]+' ~ mysql.tarball_os_arch | lower ~ '[^\s>]+\.tar"', python_shell=True) %}
+
   archive.extracted:
     - name: /tmp/percona
-    - source: {{ mysql.percona_tarball_url }}
+    - source: {{ percona_tarball_url }}
     - enforce_toplevel: False
     - skip_verify: True
     - trim_output: True
