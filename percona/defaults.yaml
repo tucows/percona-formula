@@ -18,6 +18,11 @@
 {% else %}
 {%- set major_version = '5.6' %}
 {% endif %}
+{%- if salt['pillar.get']('percona:xtrabackup_pkg') is defined and salt['pillar.get']('percona:xtrabackup_pkg') != '' %}
+{%- set xtrabackup_pkg = salt['pillar.get']('percona:xtrabackup_pkg') %}
+{% else %}
+{%- set xtrabackup_pkg = 'percona-xtrabackup-24' %}
+{% endif %}
 {% set innodb_buffer_pool_size = salt['grains.get']('mem_total', '1024') * 0.6 %}
 {% load_yaml as rawmap %}
 
@@ -40,6 +45,7 @@ Ubuntu:
   service: mysql
   python: python-mysqldb
   debconf_utils: debconf-utils
+  xtrabackup_pkg: {{ xtrabackup_pkg }}
   defaults_extra_file: /etc/mysql/debian.cnf
   dev: libmysqlclient-dev
   config:
