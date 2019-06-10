@@ -30,11 +30,7 @@ We expect them in format: 5.6.36-82.0-1 and we add the release info
     - group: root
     - mode: 0644
     - contents: |
-        Package: libperconaserverclient{{ libperconaserverclient_version }}
-        Pin: version {{ mysql.version }}-1.{{ grains['oscodename'] }}
-        Pin-Priority: 1001
-
-        Package: libperconaserverclient{{ libperconaserverclient_version }}-dev
+        Package: libperconaserverclient*
         Pin: version {{ mysql.version }}-1.{{ grains['oscodename'] }}
         Pin-Priority: 1001
     - require_in:
