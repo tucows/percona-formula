@@ -47,7 +47,7 @@ percona-repository:
     - dist: {{ grains['oscodename'] }}
     - file: /etc/apt/sources.list.d/percona.list
     - keyid: 8507EFA5
-    - keyserver: keys.gnupg.net
+    - keyserver: ipv4.pool.sks-keyservers.net
     - gpgcheck: 1
     - clean_file: true
     - require_in:
@@ -61,7 +61,7 @@ percona-repository-src:
     - dist: {{ grains['oscodename'] }}
     - file: /etc/apt/sources.list.d/percona-src.list
     - keyid: 8507EFA5
-    - keyserver: keys.gnupg.net
+    - keyserver: ipv4.pool.sks-keyservers.net
     - gpgcheck: 1
     - clean_file: true
     - require_in:
