@@ -43,7 +43,7 @@ Ubuntu:
   percona_url: {{ percona_url }}
 {% endif %}
   service: mysql
-  python: python-mysqldb
+  python: python3-mysqldb
   debconf_utils: debconf-utils
   xtrabackup_pkg: {{ xtrabackup_pkg }}
   defaults_extra_file: /etc/mysql/debian.cnf
