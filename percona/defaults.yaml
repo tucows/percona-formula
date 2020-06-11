@@ -26,7 +26,7 @@
 {% set innodb_buffer_pool_size = salt['grains.get']('mem_total', '1024') * 0.6 %}
 {% load_yaml as rawmap %}
 
-Ubuntu:
+debian:
   pkg_prefix: percona-server
   major_version: {{ major_version }}
   tarball_os_arch: {{ 'x86_64' if grains['cpuarch']=='x86_64' or grains['cpuarch']=='amd64' else 'i386' }}
